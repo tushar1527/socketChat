@@ -34,6 +34,13 @@ class VideoCall extends Component {
       .on("request", ({ from: callFrom }) => {
         this.setState({ callModal: "active", callFrom });
       })
+      .on("call", (data) => {
+        console.log("data", data);
+        if (data.sdp) {
+          this.pc.setRemoteDescription(data.sdp);
+          if (data.sdp.type === "offer") this.pc.createAnswer();
+        } else this.pc.addIceCandidate(data.candidate);
+      })
       .emit("init", customerId);
   }
   startCall(isCaller, friendID, config) {
