@@ -23,6 +23,10 @@ class PeerConnection extends Emitter {
       console.log("ontrack", event);
       this.emit("peerStream", event.streams[0]);
     };
+    this.pc.onaddtrack = (event) => {
+      console.log("onaddtrack", event);
+      this.emit("peerStream", event.streams[0]);
+    };
     // this.pc.onnegotiationneeded = () => {
     //   this.createOffer();
     // };
@@ -45,6 +49,7 @@ class PeerConnection extends Emitter {
           console.log("track", track);
           this.pc.addTrack(track, stream);
         });
+        console.log("this.pc", this.pc);
         this.emit("localStream", stream);
         const friend = this.friendID;
         if (isCaller) socket.emit("request", { to: friend, from: callerId });

@@ -29,6 +29,7 @@ class VideoCall extends Component {
       .on("init", ({ id: clientId }) => {
         document.title = `${clientId} - video call`;
         this.setState({ clientId });
+        console.log("clientId", clientId);
       })
       .on("request", ({ from: callFrom }) => {
         this.setState({ callModal: "active", callFrom });
@@ -73,19 +74,6 @@ class VideoCall extends Component {
       localSrc: null,
       peerSrc: null,
     });
-
-    // const callModel = {
-    //   from_user: this.props.customerId,
-    //   to_user: this.props.partnerId,
-    //   duration: "",
-    //   is_deleted: false,
-    // };
-    // try {
-    //   const res = await createCallLog(callModel);
-    //   console.log("res", res);
-    // } catch (error) {
-    //   console.log(error);
-    // }
   };
   render() {
     const { clientId, callFrom, callModal } = this.state;
