@@ -41,6 +41,7 @@ class VideoCall extends Component {
           if (data.sdp.type === "offer") this.pc.createAnswer();
         } else this.pc.addIceCandidate(data.candidate);
       })
+      .on("end", this.endCall.bind(this, false))
       .emit("init", customerId);
   }
   startCall(isCaller, friendID, config) {
