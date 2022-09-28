@@ -19,7 +19,10 @@ class PeerConnection extends Emitter {
         candidate: event.candidate,
       });
 
-    this.pc.ontrack = (event) => this.emit("peerStream", event.streams[0]);
+    this.pc.ontrack = (event) => {
+      console.log("ontrack", event);
+      this.emit("peerStream", event.streams[0]);
+    };
     // this.pc.onnegotiationneeded = () => {
     //   this.createOffer();
     // };
@@ -34,9 +37,12 @@ class PeerConnection extends Emitter {
    */
 
   start(isCaller, config, callerId) {
+    console.log("isCaller2", isCaller);
     this.mediaDevice
       .on("stream", (stream) => {
+        console.log("stream", stream);
         stream.getTracks().forEach((track) => {
+          console.log("track", track);
           this.pc.addTrack(track, stream);
         });
         this.emit("localStream", stream);
@@ -64,6 +70,7 @@ class PeerConnection extends Emitter {
   }
 
   createOffer() {
+    console.log("createOffer");
     this.pc
       .createOffer()
       .then(this.getDescription.bind(this))

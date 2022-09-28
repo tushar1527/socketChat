@@ -27,13 +27,10 @@ class VideoCall extends Component {
     const customerId = localStorage.getItem("me");
     socket
       .on("init", ({ id: clientId }) => {
-        console.log("clientId", clientId);
-
         document.title = `${clientId} - video call`;
         this.setState({ clientId });
       })
       .on("request", ({ from: callFrom }) => {
-        console.log("video request");
         this.setState({ callModal: "active", callFrom });
       })
       .emit("init", customerId);
@@ -42,7 +39,6 @@ class VideoCall extends Component {
     this.config = config;
     this.pc = new PeerConnection(friendID)
       .on("localStream", (src) => {
-        console.log("localStream", src);
         const newState = {
           callWindow: "active",
           localSrc: src,
@@ -65,7 +61,6 @@ class VideoCall extends Component {
   }
 
   endCall = async (isStarter) => {
-    const { createCallLog } = this.props;
     if (_.isFunction(this.pc.stop)) {
       this.pc.stop(isStarter);
     }

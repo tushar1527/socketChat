@@ -4,7 +4,6 @@ import { Dialog } from "@mui/material";
 import CallWindow from "../CallWindow";
 
 function FullScreenDialog(props) {
-  console.log(props);
   const {
     config,
     pc,

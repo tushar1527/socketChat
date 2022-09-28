@@ -13,9 +13,10 @@ class Emitter {
   }
 
   on(event, fn) {
-    console.log("this.events[event]", this.events[event]);
+    console.log("this.events[event]", event);
     if (this.events[event]) this.events[event].push(fn);
     else this.events[event] = [fn];
+    console.log("this", this);
     return this;
   }
 
