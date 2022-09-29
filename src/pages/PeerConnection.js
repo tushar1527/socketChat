@@ -2,7 +2,14 @@ import MediaDevice from "../component/MediaDevice";
 import Emitter from "./Emitter";
 import socket from "./socket";
 
-const PC_CONFIG = { iceServers: [{ urls: ["stun:stun.l.google.com:19302"] }] };
+const PC_CONFIG = {
+  iceServers: [
+    {
+      urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"],
+    },
+  ],
+  iceCandidatePoolSize: 10,
+};
 
 class PeerConnection extends Emitter {
   /**
@@ -18,21 +25,11 @@ class PeerConnection extends Emitter {
         to: this.friendID,
         candidate: event.candidate,
       });
-
+    console.log("pc.iceConnectionState", this.pc.iceConnectionState);
     this.pc.ontrack = (event) => {
-      console.log("ontrack", event);
       this.emit("peerStream", event.streams[0]);
     };
-    this.pc.onaddtrack = (event) => {
-      console.log("onaddtrack", event);
-      this.emit("peerStream", event.streams[0]);
-    };
-    this.pc.addEventListener("track", (e) => {
-      console.log("e", e);
-    });
-    // this.pc.onnegotiationneeded = () => {
-    //   this.createOffer();
-    // };
+
     this.mediaDevice = new MediaDevice();
     this.friendID = friendID;
   }
@@ -45,31 +42,23 @@ class PeerConnection extends Emitter {
 
   start(isCaller, config, callerId) {
     try {
-      console.log("isCaller2", isCaller);
       this.mediaDevice
         .on("stream", (stream) => {
-          console.log("stream", stream);
           stream.getTracks().forEach((track) => {
-            console.log("track", track);
             this.pc.addTrack(track, stream);
           });
 
-          console.log("this", this);
           this.emit("localStream", stream);
           const friend = this.friendID;
-          console.log("this.pc", friend);
           if (isCaller) {
-            console.log("isCaller", isCaller);
             socket.emit("request", { to: friend, from: callerId });
           } else {
-            console.log("offer");
             this.createOffer();
           }
         })
         .start(config);
       return this;
     } catch (err) {
-      console.log("err", err);
       return false;
     }
   }
@@ -90,7 +79,6 @@ class PeerConnection extends Emitter {
   }
 
   createOffer() {
-    console.log("createOffer");
     this.pc
       .createOffer()
       .then(this.getDescription.bind(this))
@@ -99,7 +87,6 @@ class PeerConnection extends Emitter {
   }
 
   createAnswer() {
-    console.log("createAnswer");
     this.pc
       .createAnswer()
       .then(this.getDescription.bind(this))
@@ -108,7 +95,6 @@ class PeerConnection extends Emitter {
   }
 
   getDescription(desc) {
-    console.log("desc", desc);
     this.pc.setLocalDescription(desc);
     socket.emit("call", { to: this.friendID, sdp: desc });
     return this;

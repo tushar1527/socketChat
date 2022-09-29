@@ -14,8 +14,6 @@ class UserPage extends Component {
     this.setCustomerIdHandler = this.setCustomerId.bind(this);
   }
   setCustomerId() {
-    console.log("click");
-    console.log("this.state.name", this.state.name);
     this.setState({ me: this.state.name });
     localStorage.setItem("me", this.state.name);
   }

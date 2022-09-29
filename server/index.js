@@ -19,18 +19,17 @@ const io = socketIO(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("New client connected hello");
-
   let id;
   socket
     .on("init", async () => {
       id = await users.create(socket);
-      console.log("socket init");
+
       console.log("id", id);
       socket.emit("init", { id });
     })
     .on("request", (data) => {
       const receiver = users.get(data.to);
+
       if (receiver) {
         receiver.emit("request", { from: id });
       }
@@ -38,8 +37,10 @@ io.on("connection", (socket) => {
     .on("call", (data) => {
       const receiver = users.get(data.to);
       if (receiver) {
+        console.log("receiver", receiver);
         receiver.emit("call", { ...data, from: id });
       } else {
+        console.log("failed", failed);
         socket.emit("failed");
       }
     })
