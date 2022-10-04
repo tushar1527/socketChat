@@ -1,7 +1,8 @@
 import React from "react";
 import { Col, Button } from "reactstrap";
 
-function MainWindow({ startCall, clientId, partnerId }) {
+function MainWindow({ startCall, partnerId }) {
+  console.log("partnerId", partnerId);
   // const [friendID, setFriendID] = useState(null);
 
   /**

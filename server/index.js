@@ -24,14 +24,13 @@ io.on("connection", (socket) => {
     .on("init", async () => {
       id = await users.create(socket);
 
-      console.log("id", id);
       socket.emit("init", { id });
     })
-    .on("request", (data) => {
+    .on("requestCall", (data) => {
       const receiver = users.get(data.to);
 
       if (receiver) {
-        receiver.emit("request", { from: id });
+        receiver.emit("requestCall", { from: id });
       }
     })
     .on("call", (data) => {
