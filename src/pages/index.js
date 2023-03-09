@@ -25,27 +25,27 @@ class VideoCall extends Component {
     this.rejectCallHandler = this.rejectCall.bind(this);
   }
   componentDidMount() {
-    if (!localStorage.getItem("clientId"))
-      socket
-        .on("init", ({ id: clientId }) => {
-          console.log("clientId", clientId);
-          document.title = `${clientId} - video call`;
-          this.setState({ clientId });
-          localStorage.setItem("me", clientId);
-        })
-        .on("request", ({ from: callFrom }) => {
-          console.log("callFrom", callFrom);
-          this.setState({ callModal: "active", callFrom });
-        })
-        .on("call", (data) => {
-          console.log("data", data);
-          if (data.sdp) {
-            this.pc.setRemoteDescription(data.sdp);
-            if (data.sdp.type === "offer") this.pc.createAnswer();
-          } else this.pc.addIceCandidate(data.candidate);
-        })
-        .on("end", this.endCall.bind(this, false))
-        .emit("init", { customerId: "aaa" });
+    console.log("aaa");
+    socket
+      .on("init", ({ id: clientId }) => {
+        console.log("clientId", clientId);
+        document.title = `${clientId} - video call`;
+        this.setState({ clientId });
+        localStorage.setItem("me", clientId);
+      })
+      .on("request", ({ from: callFrom }) => {
+        console.log("callFrom", callFrom);
+        this.setState({ callModal: "active", callFrom });
+      })
+      .on("call", (data) => {
+        console.log("data", data);
+        if (data.sdp) {
+          this.pc.setRemoteDescription(data.sdp);
+          if (data.sdp.type === "offer") this.pc.createAnswer();
+        } else this.pc.addIceCandidate(data.candidate);
+      })
+      .on("end", this.endCall.bind(this, false))
+      .emit("init", { customerId: "aaa" });
   }
   startCall(isCaller, friendID, config) {
     console.log("friendID", friendID);

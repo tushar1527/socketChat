@@ -3,7 +3,7 @@ const http = require("http");
 const socketIO = require("socket.io");
 const users = require("./socket/users");
 // our localhost port
-const port = 4001;
+const port = 4024;
 
 const app = express();
 
@@ -37,7 +37,7 @@ io.on("connection", (socket) => {
     .on("call", (data) => {
       const receiver = users.get(data.to);
       if (receiver) {
-        console.log("receiver", receiver);
+        console.log("receiver");
         receiver.emit("call", { ...data, from: id });
       } else {
         console.log("failed", failed);

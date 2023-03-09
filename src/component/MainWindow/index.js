@@ -9,8 +9,10 @@ function MainWindow({ startCall, clientId, partnerId }) {
    * @param {Boolean} video
    */
   const callWithVideo = (video) => {
+    console.log("video", video);
     const config = { audio: true, video };
-    return () => partnerId && startCall(true, partnerId, config);
+    console.log("partnerId", partnerId);
+    return () => startCall(true, partnerId, config);
   };
 
   return (

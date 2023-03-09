@@ -1,5 +1,5 @@
 import socketIOClient from "socket.io-client";
-const socket = socketIOClient("https://way2find.tk", {
+const socket = socketIOClient("http://localhost:4024", {
   extraHeaders: {
     "Access-Control-Allow-Origin": "*",
   },
