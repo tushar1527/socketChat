@@ -17,6 +17,7 @@ class VideoCall extends Component {
       videoModel: true,
       localSrc: null,
       peerSrc: null,
+      partnerId: "",
     };
     this.pc = {};
     this.config = null;
@@ -48,11 +49,9 @@ class VideoCall extends Component {
       .emit("init", { customerId: "aaa" });
   }
   startCall(isCaller, friendID, config) {
-    console.log("friendID", friendID);
     this.config = config;
     this.pc = new PeerConnection(friendID)
       .on("localStream", (src) => {
-        console.log("localStream start");
         const newState = {
           callWindow: "active",
           localSrc: src,
@@ -63,10 +62,8 @@ class VideoCall extends Component {
       })
       .on("peerStream", (src) => {
         console.log("peerStream start cll");
-        console.log("src", src);
         this.setState({ peerSrc: src });
       })
-
       .start(isCaller, config, friendID);
   }
   rejectCall() {
@@ -93,11 +90,11 @@ class VideoCall extends Component {
     const { clientId, callFrom, callModal } = this.state;
     return (
       <div>
-        {this.props.customerId !== "" && (
+        {clientId && (
           <MainWindow
             clientId={clientId}
             startCall={this.startCallHandler}
-            partnerId={localStorage.getItem("remote")}
+            partnerId={this.state.partnerId}
           />
         )}
         {!_.isEmpty(this.config) && <FullScreenDialog {...this} />}
