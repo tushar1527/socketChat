@@ -27,7 +27,9 @@ io.on("connection", (socket) => {
       socket.emit("init", { id });
     })
     .on("requestCall", (data) => {
+      console.log("data", data);
       const receiver = users.get(data.to);
+      console.log("data", receiver);
 
       if (receiver) {
         receiver.emit("requestCall", { from: id });
@@ -38,6 +40,16 @@ io.on("connection", (socket) => {
       if (receiver) {
         console.log("receiver");
         receiver.emit("call", { ...data, from: id });
+      } else {
+        console.log("failed", failed);
+        socket.emit("failed");
+      }
+    })
+    .on("screenShare", (data) => {
+      const receiver = users.get(data.to);
+      if (receiver) {
+        console.log("screenShare");
+        receiver.emit("screenShare", { ...data, from: id });
       } else {
         console.log("failed", failed);
         socket.emit("failed");
