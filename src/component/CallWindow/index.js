@@ -13,15 +13,23 @@ function CallWindow({
   mediaDevice,
   status,
   endCall,
+  screenShareHandler,
+  streamRef,
 }) {
   const peerVideo = useRef(null);
   const localVideo = useRef(null);
+  const screenVideo = useRef(null);
   const [video, setVideo] = useState(config.video);
   const [audio, setAudio] = useState(config.audio);
 
   useEffect(() => {
-    if (peerVideo.current && peerSrc) peerVideo.current.srcObject = peerSrc;
+    console.log("streamRef", streamRef);
+    if (peerVideo.current && peerSrc) {
+      peerVideo.current.srcObject = peerSrc;
+    }
     if (localVideo.current && localSrc) localVideo.current.srcObject = localSrc;
+    if (screenVideo.current && streamRef)
+      screenVideo.current.srcObject = streamRef;
   });
 
   useEffect(() => {
@@ -51,6 +59,7 @@ function CallWindow({
       className={classnames("call-window", status)}
       style={{ backgroundColor: "black" }}
     >
+      <div id="mediaWrapper"></div>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <div style={{ float: "left", width: "50%" }}>
           <video
@@ -69,6 +78,18 @@ function CallWindow({
             style={{ width: "100%" }}
           />
         </div>
+        {screenVideo ? (
+          <div style={{ float: "left", width: "50%" }}>
+            <video
+              id="screenShare"
+              ref={screenVideo}
+              autoPlay
+              style={{ width: "100%" }}
+            />
+          </div>
+        ) : (
+          ""
+        )}
       </div>
 
       <div className="video-control">
@@ -98,6 +119,15 @@ function CallWindow({
               onClick={() => endCall(true)}
             >
               End Call
+            </Button>
+          </Col>
+          <Col xs="auto">
+            <Button
+              color="primary"
+              className="py-1 px-3"
+              onClick={() => screenShareHandler(true)}
+            >
+              Screen Share
             </Button>
           </Col>
         </Row>

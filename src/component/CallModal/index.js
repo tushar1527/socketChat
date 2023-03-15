@@ -10,7 +10,7 @@ import classnames from "classnames";
  * @param {function} rejectCall - call not received
  */
 
-function CallModal({ status, callFrom, startCall, rejectCall }) {
+function CallModal({ status, callFrom, startCall, rejectCall, streamRef }) {
   let [second, setSecond] = useState(0);
   let [interVal, setInterVal] = useState();
 

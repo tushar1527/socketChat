@@ -8,7 +8,9 @@ function FullScreenDialog(props) {
     config,
     pc,
     endCallHandler,
-    state: { callWindow, localSrc, peerSrc, videoModel },
+    screenShareHandler,
+
+    state: { callWindow, localSrc, peerSrc, videoModel, streamRef },
   } = props;
   //  const {videoModel}=props
 
@@ -46,6 +48,8 @@ function FullScreenDialog(props) {
           config={config}
           mediaDevice={pc.mediaDevice}
           endCall={endCallHandler}
+          screenShareHandler={screenShareHandler}
+          streamRef={streamRef}
         />
       </Dialog>
     </div>
