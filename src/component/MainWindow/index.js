@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Col, Button } from "reactstrap";
 
 function MainWindow({ startCall, partnerId }) {
-  // const [friendID, setFriendID] = useState(null);
+  const [disable, setDisable] = useState(true);
 
   /**
    * Start the call with or without video
@@ -13,12 +13,23 @@ function MainWindow({ startCall, partnerId }) {
 
     return () => startCall(true, partnerId, config);
   };
+  const numberChange = (event) => {
+    if (event.target.value.length === 4) {
+      setDisable(false);
+    } else {
+      setDisable(true);
+    }
+
+    localStorage.setItem("remote", event.target.value);
+  };
 
   return (
     <Col xs="auto">
+      <input type="number" onChange={numberChange} />
       <Button
         color="primary"
         className="py-1 px-3"
+        disabled={disable}
         onClick={callWithVideo(true)}
       >
         Call

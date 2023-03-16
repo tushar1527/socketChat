@@ -15,7 +15,9 @@ function CallWindow({
   endCall,
   screenShareHandler,
   streamRef,
+  screenShare,
 }) {
+  console.log("screenShare", screenShare);
   const peerVideo = useRef(null);
   const localVideo = useRef(null);
   const screenVideo = useRef(null);
@@ -78,7 +80,7 @@ function CallWindow({
             style={{ width: "100%" }}
           />
         </div>
-        {screenVideo ? (
+        {screenVideo && screenShare ? (
           <div style={{ float: "left", width: "50%" }}>
             <video
               id="screenShare"

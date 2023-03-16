@@ -10,37 +10,25 @@ function FullScreenDialog(props) {
     endCallHandler,
     screenShareHandler,
 
-    state: { callWindow, localSrc, peerSrc, videoModel, streamRef },
+    state: {
+      callWindow,
+      localSrc,
+      peerSrc,
+      videoModel,
+      streamRef,
+      screenShare,
+    },
   } = props;
   //  const {videoModel}=props
 
   return (
     <div className="vishal">
       <Dialog
-        style={{ backgroundColor: "balck" }}
+        style={{ backgroundColor: "black" }}
         fullScreen
         open={videoModel}
         onClose={() => {}}
       >
-        {/* <AppBar className={classes.appBar}>
-          <Toolbar>
-            <Typography variant="h6" className={classes.title}>
-              Sound
-            </Typography>
-            <Button autoFocus color="inherit" onClick={()=>{}}>
-              save
-            </Button>
-          </Toolbar>
-        </AppBar>
-        <List>
-          <ListItem button>
-            <ListItemText primary="Phone ringtone" secondary="Titania" />
-          </ListItem>
-          <Divider />
-          <ListItem button>
-            <ListItemText primary="Default notification ringtone" secondary="Tethys" />
-          </ListItem>
-        </List> */}
         <CallWindow
           status={callWindow}
           localSrc={localSrc}
@@ -50,6 +38,7 @@ function FullScreenDialog(props) {
           endCall={endCallHandler}
           screenShareHandler={screenShareHandler}
           streamRef={streamRef}
+          screenShare={screenShare}
         />
       </Dialog>
     </div>

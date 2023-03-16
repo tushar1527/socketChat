@@ -22,6 +22,7 @@ class VideoCall extends Component {
       peer: null,
       screenShareRef: React.createRef(null),
       currentPeer: null,
+      screenShare: false,
     };
     this.pc = {};
     this.config = null;
@@ -42,10 +43,13 @@ class VideoCall extends Component {
         this.setState({ callModal: "active", callFrom });
       })
       .on("screenShare", (data) => {
-        if (data.sdp) {
-          this.pc.getDescription(data.sdp);
-          if (data.sdp.type === "offer") this.pc.createAnswer();
-        } else this.pc.addIceCandidate(data.candidate);
+        console.log("data", data.screenShare);
+        if (data.screenShare === "start") {
+          this.setState({ screenShare: true });
+        }
+        if (data.screenShare === "stop") {
+          this.setState({ screenShare: false, streamRef: null });
+        }
       })
       .on("call", (data) => {
         if (data.sdp) {
