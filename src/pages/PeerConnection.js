@@ -42,12 +42,12 @@ class PeerConnection extends Emitter {
     this.fullStream = null;
     this.fullStreamPeer = null;
     this.currentPeer = null;
+    this.combineStream = null;
     this.canvasElement = document.createElement("canvas");
     this.canvasCtx = this.canvasElement.getContext("2d");
     this.senders = React.createRef(null);
-
     this.encoderOptions = { mimeType: "video/webm; codecs=vp9" };
-
+    this.VideoCall = new VideoCall();
     this.pc.onicecandidate = (event) =>
       socket.emit("call", {
         to: this.friendID,
@@ -55,14 +55,25 @@ class PeerConnection extends Emitter {
       });
 
     this.pc.ontrack = (event) => {
+      console.log("getSReciver", this.pc.getReceivers()[2]);
+      if (event.streams) {
+        console.log("event", event);
+        console.log("event", event.transceiver.receiver);
+        console.log("event", event.transceiver.receiver.track);
+        const screenMediaStream = new MediaStream();
+        screenMediaStream.addTrack(event.transceiver.receiver.track);
+        this.VideoCall.state.streamRef = screenMediaStream;
+        this.emit("screenShare", screenMediaStream);
+        console.log("set", this.VideoCall.state.streamRef);
+      }
       this.senders.current = event.track;
+      console.log("set1111");
       this.emit("peerStream", event.streams[0]);
     };
 
     this.mediaDevice = new MediaDevice();
 
     this.friendID = friendID;
-    this.VideoCall = new VideoCall();
   }
 
   /**
@@ -96,6 +107,7 @@ class PeerConnection extends Emitter {
           }
         })
         .start(config);
+
       return this;
     } catch (err) {
       return false;
@@ -204,6 +216,7 @@ class PeerConnection extends Emitter {
     }
   };
   handleDataAvailable(event) {
+    console.log("dataavvlobel", event);
     if (event.data.size > 0) {
       this.recordedChunks.push(event.data);
 
@@ -265,12 +278,13 @@ class PeerConnection extends Emitter {
         "pipOverlayStream",
         this.localOverlayStream
       );
-      // this.emit("localStream", this.localOverlayStream);
+
       this.mediaRecorder = new MediaRecorder(
         fullOverlayStream,
         this.encoderOptions
       );
       this.mediaRecorder.ondataavailable = this.handleDataAvailable;
+      this.emit("localStream", this.localOverlayStream);
       overlay.volume = 0;
       // this.cam.volume = 0;
       // this.screen.volume = 0;
@@ -297,8 +311,8 @@ class PeerConnection extends Emitter {
 
       this.fullStream = stream;
     } else {
-      videoElem.width = 800;
-      videoElem.height = 800;
+      videoElem.width = 1000;
+      videoElem.height = 1000;
       videoElem.autoplay = true;
       videoElem.setAttribute("playsinline", true);
       videoElem.srcObject = new MediaStream(stream.getTracks());
@@ -313,35 +327,53 @@ class PeerConnection extends Emitter {
 
     this.screenShareDeviceDevice
       .on("stream", async (stream) => {
-        // const combinedMediaStream = new MediaStream([
-        //   ...this.stream.getTracks(),
-        //   ...stream.getTracks(),
-        // ]);
+        console.log("Screenshare", stream.getTracks()[1]);
+        // this.combineStream = this.combineStreams(this.fullStream, stream);
 
-        this.screen = await this.attachToDOM("justScreenShare", stream);
-        let vCallObj = new VideoCall();
-        vCallObj.state.streamRef = stream;
-        const screenTrack = stream.getTracks()[1];
-        await this.mergeStreamsFn(this.cam);
-        // this.emit("localStream", combinedMediaStream);
-        let screenUpdate = this.localOverlayStream.getTracks();
-        console.log("screenUpdate", screenUpdate);
-        stream.getTracks().forEach((track) => {
-          if (track.kind === "video") this.pc.addTrack(track, stream);
-        });
+        const screenMediaStream = new MediaStream(stream.getVideoTracks());
 
+        // Add screen sharing transceiver to connection
+        const screenTransceiver = this.pc.addTransceiver(
+          stream.getTracks()[1],
+          {
+            direction: "sendonly",
+          }
+        );
+        console.log("this.senders", this.pc.getSenders());
+        // this.pc.removeTrack(this.senders);
+        // this.pc.addTrack(stream.getTracks()[1], stream);
+        console.log("screenTransceiver", screenTransceiver);
         if (Array.isArray(this.senders.current)) {
+          console.log("this.senders", this.senders);
           this.senders.current
             .find((sender) => sender.track.kind === "video")
-            .replaceTrack(screenTrack);
+            .replaceTrack(stream.getTracks()[1]);
         } else {
-          this.senders.current = screenTrack;
+          this.senders.current = stream.getTracks()[1];
         }
-        let end = () => {
-          this.emit("localStream", this.stream);
-        };
+        console.log("this.senders.current", this.senders);
 
-        screenTrack.onended = end;
+        // this.screen = await this.attachToDOM("justScreenShare", stream);
+        // let vCallObj = new VideoCall();
+        // vCallObj.state.streamRef = this.combineStream;
+
+        // // const screenTrack = this.combineStream.getTracks()[1];
+        // const screenTrack = screenTransceiver.sender.track;
+
+        // console.log("screenTrack", screenTrack);
+        // await this.mergeStreamsFn(this.cam);
+        // let screenUpdate = this.localOverlayStream.getTracks();
+        // this.emit("localStream", this.combineStream);
+
+        // stream.getTracks().forEach((track) => {
+
+        // });
+
+        // let end = () => {
+        //   this.emit("localStream", this.stream);
+        // };
+
+        // screenTrack.onended = end;
 
         this.createOffer();
       })
