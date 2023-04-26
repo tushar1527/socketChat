@@ -3,7 +3,7 @@ const http = require("http");
 const socketIO = require("socket.io");
 const users = require("./socket/users");
 // our localhost port
-const port = 4024;
+const port = 4025;
 
 const app = express();
 
@@ -21,29 +21,40 @@ const io = socketIO(server, {
 io.on("connection", (socket) => {
   let id;
   socket
-    .on("init", async () => {
-      id = await users.create(socket);
-
-      socket.emit("init", { id });
+    // .on("init", (room) => {
+    //   console.log("room", room);
+    //   socket.join(room.drId);
+    //   socket.join(room.patientId);
+    // })
+    .on("request", async (data) => {
+      let dataResponse = await chatRoomController.sendSocketMessage(data);
+      socket.emit(data.roomId, dataResponse);
+      socket.broadcast.emit(data.roomId, dataResponse);
+    })
+    .on("init", async (data) => {
+      socket.join(data.userId);
+      socket.broadcast.emit(data.room, {
+        channel: "init",
+        room: {
+          roomId: data.room,
+          from: data.userId,
+        },
+      });
+      console.log("data", data);
     })
     .on("requestCall", (data) => {
-      console.log("data", data);
-      const receiver = users.get(data.to);
-      console.log("data", receiver);
-
-      if (receiver) {
-        receiver.emit("requestCall", { from: id });
-      }
+      console.log("requestCall", data);
+      socket.broadcast.emit(data.room, {
+        channel: "callFrom",
+        room: data,
+      });
     })
     .on("call", (data) => {
-      const receiver = users.get(data.to);
-      if (receiver) {
-        console.log("receiver");
-        receiver.emit("call", { ...data, from: id });
-      } else {
-        console.log("failed", failed);
-        socket.emit("failed");
-      }
+      console.log("data", data);
+      socket.broadcast.emit(data.to, {
+        channel: "startCall",
+        room: data,
+      });
     })
     .on("screenShare", (data) => {
       const receiver = users.get(data.to);
@@ -54,6 +65,22 @@ io.on("connection", (socket) => {
         console.log("failed", failed);
         socket.emit("failed");
       }
+    })
+    .on("reTransform", (data) => {
+      console.log("reTransform", data);
+      // const receiver = users.get(data.to);
+      // const sender = users.get(data.me);
+      // console.log("data.me", data.me);
+      // console.log("screenShare");
+      // if (receiver) {
+      //   receiver.emit("reTransform", { ...data, from: data.me });
+      // } else if (sender) {
+      //   console.log("retransform");
+      //   sender.emit("reTransform", { ...data, me: data.me, from: data.to });
+      // } else {
+      //   console.log("failed", failed);
+      //   socket.emit("failed");
+      // }
     })
     .on("end", (data) => {
       const receiver = users.get(data.to);

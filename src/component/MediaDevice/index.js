@@ -16,12 +16,13 @@ class MediaDevice extends Emitter {
       },
       audio: true,
     };
-
+    console.log("media device");
     navigator.mediaDevices
       .getUserMedia(constraints)
       .then((stream) => {
         this.stream = stream;
         this.emit("stream", stream);
+        console.log("media device2222");
       })
       .catch((err) => {
         if (err instanceof DOMException) {

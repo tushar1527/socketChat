@@ -8,7 +8,7 @@ import React from "react";
 const PC_CONFIG = {
   iceServers: [
     {
-      urls: ["stun:stun1.l.google.com:19302"],
+      urls: ["stun:stun.l.google.com:19302	"],
     },
   ],
   iceCandidatePoolSize: 10,
@@ -35,7 +35,7 @@ class PeerConnection extends Emitter {
       });
 
     this.pc.ontrack = (event) => {
-      console.log("event", event);
+      console.log("event", this.pc);
       if (event.streams) {
         const screenMediaStream = new MediaStream();
         screenMediaStream.addTrack(event.transceiver.receiver.track);
@@ -62,6 +62,7 @@ class PeerConnection extends Emitter {
     try {
       this.mediaDevice
         .on("stream", async (stream) => {
+          console.log("stream", stream);
           this.stream = stream;
 
           stream.getTracks().forEach((track) => {
@@ -71,9 +72,10 @@ class PeerConnection extends Emitter {
           this.emit("localStream", stream);
           const friend = this.friendID;
 
+          console.log("isCaller", isCaller);
           if (isCaller) {
             socket.emit("requestCall", {
-              to: friend,
+              room: friend,
               from: localStorage.getItem("me"),
             });
           } else {
@@ -125,6 +127,7 @@ class PeerConnection extends Emitter {
     } else {
       this.pc.setLocalDescription(desc);
 
+      console.log("this.friendID", this.friendID);
       socket.emit("call", { to: this.friendID, sdp: desc });
     }
 
@@ -185,6 +188,10 @@ class PeerConnection extends Emitter {
         this.createOffer();
       })
       .start();
+  };
+  rejoin = async () => {
+    console.log("aaaa");
+    this.start();
   };
 }
 

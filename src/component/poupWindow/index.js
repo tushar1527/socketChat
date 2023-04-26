@@ -9,6 +9,7 @@ function FullScreenDialog(props) {
     pc,
     endCallHandler,
     screenShareHandler,
+    restartCall,
 
     state: {
       callWindow,
@@ -39,6 +40,7 @@ function FullScreenDialog(props) {
           screenShareHandler={screenShareHandler}
           streamRef={streamRef}
           screenShare={screenShare}
+          restartCall={restartCall}
         />
       </Dialog>
     </div>

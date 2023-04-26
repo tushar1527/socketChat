@@ -16,8 +16,8 @@ function CallWindow({
   screenShareHandler,
   streamRef,
   screenShare,
+  restartCall,
 }) {
-  console.log("screenShare", screenShare);
   const peerVideo = useRef(null);
   const localVideo = useRef(null);
   const screenVideo = useRef(null);
@@ -25,7 +25,6 @@ function CallWindow({
   const [audio, setAudio] = useState(config.audio);
 
   useEffect(() => {
-    console.log("streamRef", streamRef);
     if (peerVideo.current && peerSrc) {
       peerVideo.current.srcObject = peerSrc;
     }
@@ -123,6 +122,7 @@ function CallWindow({
               End Call
             </Button>
           </Col>
+
           <Col xs="auto">
             <Button
               color="primary"
