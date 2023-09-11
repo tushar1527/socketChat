@@ -77,6 +77,7 @@ class PeerConnection extends Emitter {
             socket.emit("requestCall", {
               room: friend,
               from: localStorage.getItem("me"),
+              appointment: localStorage.getItem("appointmentId"),
             });
           } else {
             this.createOffer();
@@ -96,7 +97,10 @@ class PeerConnection extends Emitter {
    */
   stop(isStarter) {
     if (isStarter) {
-      socket.emit("end", { to: this.friendID });
+      socket.emit("end", {
+        to: this.friendID,
+        room: localStorage.getItem("room"),
+      });
     }
     this.mediaDevice.stop();
     this.pc.close();

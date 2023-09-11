@@ -29,8 +29,9 @@ function CallWindow({
       peerVideo.current.srcObject = peerSrc;
     }
     if (localVideo.current && localSrc) localVideo.current.srcObject = localSrc;
-    if (screenVideo.current && streamRef)
+    if (screenVideo.current && streamRef) {
       screenVideo.current.srcObject = streamRef;
+    }
   });
 
   useEffect(() => {

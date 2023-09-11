@@ -69,21 +69,23 @@ class VideoCall extends Component {
       //   // this.startCallHandler(false, friendID, config);
       // })
       .on(localStorage.getItem("room"), (data) => {
-        if (data.channel === "init") {
+        if (data.channel === "videoInit") {
           localStorage.setItem("remote", data.room.from);
         } else if (data.channel === "callFrom") {
           localStorage.setItem("remote", data.room.from);
           let from = data.room.from;
           this.setState({ callModal: "active", from });
         } else if (data.channel === "startCall") {
-          console.log("data", data);
           if (data.room.sdp) {
             this.pc.setRemoteDescription(data.room.sdp);
             if (data.room.sdp.type === "offer") this.pc.createAnswer();
           } else this.pc.addIceCandidate(data.room.candidate);
         }
       })
-      .emit("init", {
+      .on(localStorage.getItem("me"), (data) => {
+        console.log("data", data);
+      })
+      .emit("videoInit", {
         room: localStorage.getItem("room"),
         userId: localStorage.getItem("me"),
       });
@@ -104,7 +106,8 @@ class VideoCall extends Component {
         this.setState(newState);
       })
       .on("screenShare", (src) => {
-        this.setState({ streamRef: src });
+        console.log("src", src);
+        this.setState({ streamRef: src, screenShare: true });
       })
       .on("peerStream", (src) => {
         this.setState({ peerSrc: src });
